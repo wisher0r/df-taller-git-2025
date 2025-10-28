@@ -68,3 +68,43 @@ Ejecutar con Maven:
 
 La app inicia en: http://localhost:8080
 H2 Console: http://localhost:8080/h2-console (JDBC URL: jdbc:h2:mem:lp32025)
+
+1. Operación Batch Exitosa (Mezcla de Tipos)
+curl -X POST http://localhost:8080/api/empleados/batch \
+  -H "Content-Type: application/json" \
+  -d '[
+    {
+      "@class": "py.edu.uc.lp32025.domain.EmpleadoTiempoCompleto",
+      "nombre": "Ana López", "numeroDocumento": "1111111", "fechaNacimiento": "1990-01-01",
+      "salarioMensual": 5000000, "departamento": "IT"
+    },
+    {
+      "@class": "py.edu.uc.lp32025.domain.EmpleadoPorHora",
+      "nombre": "Luis García", "numeroDocumento": "2222222",
+      "tarifaPorHora": 50000, "horasTrabajadas": 45
+    },
+    {
+      "@class": "py.edu.uc.lp32025.domain.Contratista",
+      "nombre": "María Ruiz", "numeroDocumento": "3333333",
+      "montoPorProyecto": 1000000, "proyectosCompletados": 2, "fechaFinContrato": "2026-12-31"
+    }
+  ]'
+
+2. Operación Batch con Error de Validación
+curl -X POST http://localhost:8080/api/empleados/batch \
+  -H "Content-Type: application/json" \
+  -d '[
+    {
+      "@class": "py.edu.uc.lp32025.domain.EmpleadoTiempoCompleto",
+      "nombre": "Error Test", "numeroDocumento": "9999999", "salarioMensual": 0
+    }
+  ]'
+3. Consulta de Nómina Total por Tipo
+curl http://localhost:8080/api/empleados/nomina
+
+4. Reporte de Polimorfismo (Completo)
+curl http://localhost:8080/api/empleados/reporte
+
+5. Empleados por Tipo
+curl http://localhost:8080/api/empleados/tipo/tiempocompleto
+
