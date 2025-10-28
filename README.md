@@ -90,7 +90,10 @@ curl -X POST http://localhost:8080/api/empleados/batch \
     }
   ]'
 
-2. Operación Batch con Error de Validación
+<img width="667" height="465" alt="image" src="https://github.com/user-attachments/assets/486239c7-ab31-4b2f-8fa7-320997685493" />
+
+
+3. Operación Batch con Error de Validación
 curl -X POST http://localhost:8080/api/empleados/batch \
   -H "Content-Type: application/json" \
   -d '[
@@ -99,12 +102,20 @@ curl -X POST http://localhost:8080/api/empleados/batch \
       "nombre": "Error Test", "numeroDocumento": "9999999", "salarioMensual": 0
     }
   ]'
+
+  <img width="1862" height="839" alt="image" src="https://github.com/user-attachments/assets/18854214-62b8-48dc-9634-4b5583d23c21" />
+
 3. Consulta de Nómina Total por Tipo
 curl http://localhost:8080/api/empleados/nomina
+<img width="1846" height="817" alt="image" src="https://github.com/user-attachments/assets/78752178-429e-4ce6-82f7-9f6e94a8e822" />
 
-4. Reporte de Polimorfismo (Completo)
+
+5. Reporte de Polimorfismo (Completo)
 curl http://localhost:8080/api/empleados/reporte
+<img width="1874" height="831" alt="image" src="https://github.com/user-attachments/assets/a5326b28-6b5e-4246-a82e-3010e114220a" />
 
-5. Empleados por Tipo
+
+7. Empleados por Tipo
 curl http://localhost:8080/api/empleados/tipo/tiempocompleto
+<img width="1877" height="829" alt="image" src="https://github.com/user-attachments/assets/3a5b2fcd-fbe4-48eb-9c80-fdc316abc5b8" />
 
