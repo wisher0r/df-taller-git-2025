@@ -13,19 +13,38 @@ public class EmpleadoTiempoCompleto extends Persona {
     private String departamento;
 
     // Getters y Setters
-    public BigDecimal getSalarioMensual() {
-        return salarioMensual;
+    public BigDecimal getSalarioMensual() { return salarioMensual; }
+    public void setSalarioMensual(BigDecimal salarioMensual) { this.salarioMensual = salarioMensual; }
+
+    public String getDepartamento() { return departamento; }
+    public void setDepartamento(String departamento) { this.departamento = departamento; }
+
+    // -------------------------
+    // Métodos abstractos implementados
+    // -------------------------
+    @Override
+    public BigDecimal calcularSalario() {
+        return salarioMensual.subtract(salarioMensual.multiply(new BigDecimal("0.09")));
     }
 
-    public void setSalarioMensual(BigDecimal salarioMensual) {
-        this.salarioMensual = salarioMensual;
+    @Override
+    public BigDecimal calcularDeducciones() {
+        return salarioMensual.multiply(new BigDecimal("0.05"));
     }
 
-    public String getDepartamento() {
-        return departamento;
+    @Override
+    public boolean validarDatosEspecificos() {
+        return salarioMensual.compareTo(new BigDecimal("2899048")) >= 0;
     }
 
-    public void setDepartamento(String departamento) {
-        this.departamento = departamento;
+    // -------------------------
+    // Método sobrescrito para información completa
+    // -------------------------
+    @Override
+    public String obtenerInformacionCompleta() {
+        String infoBase = super.obtenerInformacionCompleta();
+        return infoBase +
+                ", Departamento: " + departamento +
+                ", Salario Mensual: " + salarioMensual;
     }
 }
