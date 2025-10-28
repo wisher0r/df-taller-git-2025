@@ -6,10 +6,18 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.*;
 
+
+import com.fasterxml.jackson.annotation.*;
+import jakarta.persistence.*;
+
+
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "tipo_empleado")
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.CLASS,
+        property = "@class"
+)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = EmpleadoTiempoCompleto.class, name = "EmpleadoTiempoCompleto"),
         @JsonSubTypes.Type(value = EmpleadoPorHora.class, name = "EmpleadoPorHora"),
