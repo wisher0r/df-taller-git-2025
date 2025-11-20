@@ -1,47 +1,44 @@
+// src/main/java/py/edu/uc/lp32025/controller/EmpleadoTiempoCompletoController.java
 package py.edu.uc.lp32025.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.math.BigDecimal;
-
 import py.edu.uc.lp32025.domain.EmpleadoTiempoCompleto;
+import py.edu.uc.lp32025.dto.BaseDTO;
 import py.edu.uc.lp32025.dto.ImpuestoDTO;
 import py.edu.uc.lp32025.service.EmpleadoTiempoCompletoService;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/empleados")
-public class EmpleadoTiempoCompletoController {
+@RequestMapping("/api/empleados/tiempo-completo")
+@RequiredArgsConstructor
+public class EmpleadoTiempoCompletoController extends BaseController {
 
     private final EmpleadoTiempoCompletoService service;
 
-    public EmpleadoTiempoCompletoController(EmpleadoTiempoCompletoService service) {
-        this.service = service;
-    }
-
-    // Listar todos los empleados
     @GetMapping
-    public List<EmpleadoTiempoCompleto> listar() {
-        return service.listarTodos();
+    public ResponseEntity<BaseDTO> listar() {
+        List<EmpleadoTiempoCompleto> empleados = service.listarTodos();
+        return ok(empleados, "Lista de empleados de tiempo completo");
     }
 
-    // Obtener un empleado por ID
     @GetMapping("/{id}")
-    public EmpleadoTiempoCompleto obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<BaseDTO> obtenerPorId(@PathVariable Long id) {
         return service.buscarPorId(id)
-                .orElseThrow(() -> new RuntimeException("Empleado no encontrado con ID " + id));
+                .map(emp -> ok(emp, "Empleado encontrado"))
+                .orElseGet(() -> notFound("Empleado no encontrado con ID " + id));
     }
 
-    // Crear un nuevo empleado
     @PostMapping
-    public EmpleadoTiempoCompleto crear(@RequestBody EmpleadoTiempoCompleto empleado) {
-        return service.guardar(empleado);
+    public ResponseEntity<BaseDTO> crear(@RequestBody EmpleadoTiempoCompleto empleado) {
+        EmpleadoTiempoCompleto saved = service.guardar(empleado);
+        return created(saved, "Empleado creado exitosamente");
     }
 
-    // Actualizar un empleado existente
     @PutMapping("/{id}")
-    public EmpleadoTiempoCompleto actualizar(@PathVariable Long id, @RequestBody EmpleadoTiempoCompleto empleado) {
+    public ResponseEntity<BaseDTO> actualizar(@PathVariable Long id, @RequestBody EmpleadoTiempoCompleto empleado) {
         return service.buscarPorId(id)
                 .map(existente -> {
                     existente.setNombre(empleado.getNombre());
@@ -49,34 +46,34 @@ public class EmpleadoTiempoCompletoController {
                     existente.setDepartamento(empleado.getDepartamento());
                     existente.setSalarioMensual(empleado.getSalarioMensual());
                     existente.setFechaNacimiento(empleado.getFechaNacimiento());
-                    return service.guardar(existente);
+                    EmpleadoTiempoCompleto updated = service.guardar(existente);
+                    return ok(updated, "Empleado actualizado");
                 })
-                .orElseThrow(() -> new RuntimeException("Empleado no encontrado con ID " + id));
+                .orElseGet(() -> notFound("Empleado no encontrado con ID " + id));
     }
 
-    // Eliminar un empleado
     @DeleteMapping("/{id}")
-    public void eliminar(@PathVariable Long id) {
-        service.eliminar(id);
+    public ResponseEntity<BaseDTO> eliminar(@PathVariable Long id) {
+        if (service.existe(id)) {
+            service.eliminar(id);
+            return noContent();
+        }
+        return notFound("Empleado no encontrado con ID " + id);
     }
 
-    // -------------------------
-    // Nuevo endpoint: consultar impuestos
-    // -------------------------
     @GetMapping("/{id}/impuestos")
-    public ImpuestoDTO consultarImpuestos(@PathVariable Long id) {
-        EmpleadoTiempoCompleto empleado = service.buscarPorId(id)
-                .orElseThrow(() -> new RuntimeException("Empleado no encontrado con ID " + id));
-
-        BigDecimal salario = empleado.calcularSalario();
-        BigDecimal deducciones = empleado.calcularDeducciones();
-        BigDecimal impuesto = empleado.calcularImpuestos();
-        boolean datosValidos = empleado.validarDatosEspecificos();
-        String informacionCompleta = empleado.obtenerInformacionCompleta(); // NUEVO
-
-        return new ImpuestoDTO(salario, deducciones, impuesto, datosValidos, informacionCompleta);
+    public ResponseEntity<BaseDTO> consultarImpuestos(@PathVariable Long id) {
+        return service.buscarPorId(id)
+                .map(emp -> {
+                    ImpuestoDTO dto = new ImpuestoDTO(
+                            emp.calcularSalario(),
+                            emp.calcularDeducciones(),
+                            emp.calcularImpuestos(),
+                            emp.validarDatosEspecificos(),
+                            emp.obtenerInformacionCompleta()
+                    );
+                    return ok(dto, "Cálculo de impuestos");
+                })
+                .orElseGet(() -> notFound("Empleado no encontrado"));
     }
-
-
-
 }

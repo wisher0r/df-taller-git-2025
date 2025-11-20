@@ -16,6 +16,14 @@ public class Contratista extends Persona {
     @Column(nullable = false)
     private LocalDate fechaFinContrato;
 
+    public Contratista(String nombre, LocalDate fechaNacimiento, String numeroDocumento) {
+        super(nombre, fechaNacimiento, numeroDocumento);
+    }
+
+    public Contratista() {
+
+    }
+
     // Getters y Setters
     public BigDecimal getMontoPorProyecto() {
         return montoPorProyecto;
@@ -41,18 +49,21 @@ public class Contratista extends Persona {
         this.fechaFinContrato = fechaFinContrato;
     }
 
+
     @Override
     public BigDecimal calcularSalario() {
-        return null;
+        return montoPorProyecto.multiply(BigDecimal.valueOf(proyectosCompletados));
     }
 
     @Override
     public BigDecimal calcularDeducciones() {
-        return null;
+        return calcularSalario().multiply(new BigDecimal("0.15")); // 15%
     }
 
     @Override
     public boolean validarDatosEspecificos() {
-        return false;
+        return montoPorProyecto != null && montoPorProyecto.compareTo(BigDecimal.ZERO) > 0
+                && proyectosCompletados >= 0
+                && fechaFinContrato != null && fechaFinContrato.isAfter(LocalDate.now());
     }
 }

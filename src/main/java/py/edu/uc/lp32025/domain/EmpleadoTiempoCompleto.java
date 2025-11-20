@@ -1,7 +1,9 @@
+// src/main/java/py/edu/uc/lp32025/domain/EmpleadoTiempoCompleto.java
 package py.edu.uc.lp32025.domain;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 public class EmpleadoTiempoCompleto extends Persona {
@@ -12,6 +14,19 @@ public class EmpleadoTiempoCompleto extends Persona {
     @Column(nullable = false)
     private String departamento;
 
+    // CONSTRUCTOR CON PARÁMETROS (CORREGIDO)
+    public EmpleadoTiempoCompleto(String nombre, LocalDate fechaNacimiento, String numeroDocumento,
+                                  BigDecimal salarioMensual, String departamento) {
+        super(nombre, fechaNacimiento, numeroDocumento);
+        this.salarioMensual = salarioMensual;
+        this.departamento = departamento;
+    }
+
+    // CONSTRUCTOR VACÍO (OBLIGATORIO PARA JPA)
+    public EmpleadoTiempoCompleto() {
+        super();
+    }
+
     // Getters y Setters
     public BigDecimal getSalarioMensual() { return salarioMensual; }
     public void setSalarioMensual(BigDecimal salarioMensual) { this.salarioMensual = salarioMensual; }
@@ -19,31 +34,29 @@ public class EmpleadoTiempoCompleto extends Persona {
     public String getDepartamento() { return departamento; }
     public void setDepartamento(String departamento) { this.departamento = departamento; }
 
-    // -------------------------
-    // Métodos abstractos implementados
-    // -------------------------
+    // MÉTODOS ABSTRACTOS
     @Override
     public BigDecimal calcularSalario() {
-        return salarioMensual.subtract(salarioMensual.multiply(new BigDecimal("0.09")));
+        // DEVUELVE SALARIO BRUTO (correcto)
+        return salarioMensual;
     }
 
     @Override
     public BigDecimal calcularDeducciones() {
+        // 5% de deducciones
         return salarioMensual.multiply(new BigDecimal("0.05"));
     }
 
     @Override
     public boolean validarDatosEspecificos() {
-        return salarioMensual.compareTo(new BigDecimal("2899048")) >= 0;
+        // Salario ≥ 2,899,048
+        return salarioMensual != null && salarioMensual.compareTo(new BigDecimal("2899048")) >= 0
+                && departamento != null && !departamento.isBlank();
     }
 
-    // -------------------------
-    // Método sobrescrito para información completa
-    // -------------------------
     @Override
     public String obtenerInformacionCompleta() {
-        String infoBase = super.obtenerInformacionCompleta();
-        return infoBase +
+        return super.obtenerInformacionCompleta() +
                 ", Departamento: " + departamento +
                 ", Salario Mensual: " + salarioMensual;
     }

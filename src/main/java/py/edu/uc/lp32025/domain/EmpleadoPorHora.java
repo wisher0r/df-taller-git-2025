@@ -29,18 +29,25 @@ public class EmpleadoPorHora extends Persona {
         this.horasTrabajadas = horasTrabajadas;
     }
 
+
     @Override
     public BigDecimal calcularSalario() {
-        return null;
+        BigDecimal base = tarifaPorHora.multiply(BigDecimal.valueOf(horasTrabajadas));
+        if (horasTrabajadas > 40) {
+            int extras = horasTrabajadas - 40;
+            base = base.add(tarifaPorHora.multiply(BigDecimal.valueOf(extras)).multiply(new BigDecimal("1.5")));
+        }
+        return base;
     }
 
     @Override
     public BigDecimal calcularDeducciones() {
-        return null;
+        return calcularSalario().multiply(new BigDecimal("0.09")); // 9%
     }
 
     @Override
     public boolean validarDatosEspecificos() {
-        return false;
+        return tarifaPorHora != null && tarifaPorHora.compareTo(BigDecimal.ZERO) > 0
+                && horasTrabajadas >= 0 && horasTrabajadas <= 160;
     }
 }

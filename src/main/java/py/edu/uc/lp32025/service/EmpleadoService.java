@@ -1,8 +1,12 @@
 // src/main/java/py/edu/uc/lp32025/service/EmpleadoService.java
 package py.edu.uc.lp32025.service;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import py.edu.uc.lp32025.controller.DiasInsuficientesException;
+import py.edu.uc.lp32025.controller.EmpleadoNoEncontradoException;
 import py.edu.uc.lp32025.domain.*;
 import py.edu.uc.lp32025.dto.BatchResponseDTO;
 import py.edu.uc.lp32025.dto.ImpuestoDTO;
@@ -13,19 +17,21 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class EmpleadoService {
 
     private final EmpleadoTiempoCompletoRepository tcRepo;
     private final EmpleadoPorHoraRepository phRepo;
     private final ContratistaRepository conRepo;
-
+    private final PersonaRepository personaRepository;
     public EmpleadoService(
             EmpleadoTiempoCompletoRepository tcRepo,
             EmpleadoPorHoraRepository phRepo,
-            ContratistaRepository conRepo) {
+            ContratistaRepository conRepo, PersonaRepository personaRepository) {
         this.tcRepo = tcRepo;
         this.phRepo = phRepo;
         this.conRepo = conRepo;
+        this.personaRepository = personaRepository;
     }
 
     // ========================================
@@ -138,5 +144,33 @@ public class EmpleadoService {
             case "contratista" -> conRepo.findAll();
             default -> throw new IllegalArgumentException("Tipo desconocido: " + tipo);
         };
+
     }
+
+    // En EmpleadoService.java – añade este método
+    public Persona findById(Long id) {
+        return personaRepository.findById(id)
+                .orElseThrow(() -> new EmpleadoNoEncontradoException("Empleado no encontrado con ID " + id));
+    }
+    @Transactional
+    public void solicitarDias(Long id, int dias, String tipo) throws DiasInsuficientesException {
+        Persona persona = personaRepository.findById(id)
+                .orElseThrow(() -> new EmpleadoNoEncontradoException("Empleado no encontrado con ID " + id));
+
+        // REGLA DE NEGOCIO: solo gerentes pueden pedir más de 20 días
+        if (!(persona instanceof Gerente) && dias > 20) {
+            throw new DiasInsuficientesException("Solo gerentes pueden solicitar más de 20 días. Solicitado: " + dias);
+        }
+
+        if ("vacaciones".equalsIgnoreCase(tipo)) {
+            persona.setDiasVacacionesSolicitados(persona.getDiasVacacionesSolicitados() + dias);
+        } else if ("permiso".equalsIgnoreCase(tipo)) {
+            persona.setDiasPermisosSolicitados(persona.getDiasPermisosSolicitados() + dias);
+        }
+
+        personaRepository.save(persona);
+
+        log.info("Solicitud de {} días de {} aprobada para ID {}", dias, tipo, id);
+    }
+
 }

@@ -1,51 +1,47 @@
+// src/main/java/py/edu/uc/lp32025/controller/ContratistaController.java
 package py.edu.uc.lp32025.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import py.edu.uc.lp32025.domain.Contratista;
+import py.edu.uc.lp32025.dto.BaseDTO;
 import py.edu.uc.lp32025.repository.ContratistaRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/contratistas")
-public class ContratistaController {
+@RequiredArgsConstructor
+public class ContratistaController extends BaseController {
 
-    private final ContratistaRepository contratistaRepository;
+    private final ContratistaRepository repository;
 
-    public ContratistaController(ContratistaRepository contratistaRepository) {
-        this.contratistaRepository = contratistaRepository;
-    }
-
-    // ✅ Obtener todos los contratistas
     @GetMapping
-    public List<Contratista> getAll() {
-        return contratistaRepository.findAll();
+    public ResponseEntity<BaseDTO> getAll() {
+        List<Contratista> contratistas = repository.findAll();
+        return ok(contratistas, "Lista de contratistas");
     }
 
-    // ✅ Obtener un contratista por ID
     @GetMapping("/{id}")
-    public ResponseEntity<Contratista> getById(@PathVariable Long id) {
-        Optional<Contratista> contratista = contratistaRepository.findById(id);
-        return contratista.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<BaseDTO> getById(@PathVariable Long id) {
+        return repository.findById(id)
+                .map(c -> ok(c, "Contratista encontrado"))
+                .orElseGet(() -> notFound("Contratista no encontrado con ID " + id));
     }
 
-    // ✅ Crear un nuevo contratista
     @PostMapping
-    public ResponseEntity<Contratista> create(@RequestBody Contratista contratista) {
-        Contratista saved = contratistaRepository.save(contratista);
-        return ResponseEntity.ok(saved);
+    public ResponseEntity<BaseDTO> create(@RequestBody Contratista contratista) {
+        Contratista saved = repository.save(contratista);
+        return created(saved, "Contratista creado");
     }
 
-    // ✅ Eliminar por ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (contratistaRepository.existsById(id)) {
-            contratistaRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
+    public ResponseEntity<BaseDTO> delete(@PathVariable Long id) {
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return noContent();
         }
-        return ResponseEntity.notFound().build();
+        return notFound("Contratista no encontrado con ID " + id);
     }
 }

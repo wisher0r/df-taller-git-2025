@@ -2,6 +2,7 @@ package py.edu.uc.lp32025.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import py.edu.uc.lp32025.controller.FechaNacimientoInvalidaException;
 import py.edu.uc.lp32025.domain.Persona;
 import py.edu.uc.lp32025.repository.PersonaRepository;
 
@@ -23,9 +24,10 @@ public class PersonService {
         return personaRepository.findById(id);
     }
 
+    // En PersonService.savePersona
     public Persona savePersona(Persona persona) {
         if (persona.getFechaNacimiento() != null && persona.getFechaNacimiento().isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException("La fecha de nacimiento no puede estar en el futuro");
+            throw new FechaNacimientoInvalidaException("La fecha de nacimiento no puede estar en el futuro");
         }
         return personaRepository.save(persona);
     }

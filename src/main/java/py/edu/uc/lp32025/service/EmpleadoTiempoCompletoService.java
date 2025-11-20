@@ -96,5 +96,8 @@ public class EmpleadoTiempoCompletoService {
             }
         }
     }
+    public boolean existe(Long id) {
+        return repository.existsById(id);
+    }
     }
 

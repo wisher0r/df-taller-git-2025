@@ -1,51 +1,47 @@
+// src/main/java/py/edu/uc/lp32025/controller/EmpleadoPorHoraController.java
 package py.edu.uc.lp32025.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import py.edu.uc.lp32025.domain.EmpleadoPorHora;
+import py.edu.uc.lp32025.dto.BaseDTO;
 import py.edu.uc.lp32025.repository.EmpleadoPorHoraRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/empleados/por-horas")
-public class EmpleadoPorHoraController {
+@RequestMapping("/api/empleados/por-hora")
+@RequiredArgsConstructor
+public class EmpleadoPorHoraController extends BaseController {
 
-    private final EmpleadoPorHoraRepository empleadoPorHoraRepository;
+    private final EmpleadoPorHoraRepository repository;
 
-    public EmpleadoPorHoraController(EmpleadoPorHoraRepository empleadoPorHoraRepository) {
-        this.empleadoPorHoraRepository = empleadoPorHoraRepository;
-    }
-
-    // ✅ Obtener todos los empleados por horas
     @GetMapping
-    public List<EmpleadoPorHora> getAll() {
-        return empleadoPorHoraRepository.findAll();
+    public ResponseEntity<BaseDTO> getAll() {
+        List<EmpleadoPorHora> empleados = repository.findAll();
+        return ok(empleados, "Lista de empleados por hora");
     }
 
-    // ✅ Obtener un empleado por ID
     @GetMapping("/{id}")
-    public ResponseEntity<EmpleadoPorHora> getById(@PathVariable Long id) {
-        Optional<EmpleadoPorHora> empleado = empleadoPorHoraRepository.findById(id);
-        return empleado.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<BaseDTO> getById(@PathVariable Long id) {
+        return repository.findById(id)
+                .map(emp -> ok(emp, "Empleado encontrado"))
+                .orElseGet(() -> notFound("Empleado no encontrado con ID " + id));
     }
 
-    // ✅ Crear un nuevo empleado por horas
     @PostMapping
-    public ResponseEntity<EmpleadoPorHora> create(@RequestBody EmpleadoPorHora empleadoPorHora) {
-        EmpleadoPorHora saved = empleadoPorHoraRepository.save(empleadoPorHora);
-        return ResponseEntity.ok(saved);
+    public ResponseEntity<BaseDTO> create(@RequestBody EmpleadoPorHora empleado) {
+        EmpleadoPorHora saved = repository.save(empleado);
+        return created(saved, "Empleado por hora creado");
     }
 
-    // ✅ Eliminar por ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (empleadoPorHoraRepository.existsById(id)) {
-            empleadoPorHoraRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
+    public ResponseEntity<BaseDTO> delete(@PathVariable Long id) {
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return noContent();
         }
-        return ResponseEntity.notFound().build();
+        return notFound("Empleado no encontrado con ID " + id);
     }
 }
