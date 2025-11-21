@@ -17,7 +17,10 @@ import java.time.LocalDate;
         @JsonSubTypes.Type(value = Gerente.class, name = "Gerente") // 👈 agregado para serialización correcta
 })
 public abstract class Persona implements Mapeable {
+    @Column(name = "dias_vacaciones_solicitados", nullable = false, columnDefinition = "integer default 0")
     private int diasVacacionesSolicitados = 0;
+
+    @Column(name = "dias_permisos_solicitados", nullable = false, columnDefinition = "integer default 0")
     private int diasPermisosSolicitados = 0;
 
     // AÑADE ESTOS GETTERS Y SETTERS

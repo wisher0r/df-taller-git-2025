@@ -1,4 +1,6 @@
 # === H2 Database – ESTO ES LO QUE FALTABA ===
+# H2 Database
+data/
 *.mv.db
 *.trace.db
 *.lock.db

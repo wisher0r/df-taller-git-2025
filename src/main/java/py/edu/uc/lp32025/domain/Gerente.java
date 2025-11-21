@@ -1,17 +1,27 @@
+// src/main/java/py/edu/uc/lp32025/domain/Gerente.java
 package py.edu.uc.lp32025.domain;
-import py.edu.uc.lp32025.domain.EmpleadoTiempoCompleto;
+
 import jakarta.persistence.Entity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Entity
 public class Gerente extends EmpleadoTiempoCompleto implements VacacionesCalculator {
 
-    private int diasVacacionesAdicionales; // Exclusivo para gerentes
+    private int diasVacacionesAdicionales = 10;
 
-    public Gerente() {}
+    public Gerente() {
+        super();
+    }
+
+    public Gerente(String nombre, LocalDate fechaNacimiento, String numeroDocumento,
+                   BigDecimal salarioMensual, String departamento) {
+        super(nombre, fechaNacimiento, numeroDocumento, salarioMensual, departamento);
+    }
 
     public Gerente(String nombre, LocalDate fechaNacimiento, String numeroDocumento,
                    BigDecimal salarioMensual, String departamento, int diasVacacionesAdicionales) {
@@ -19,29 +29,23 @@ public class Gerente extends EmpleadoTiempoCompleto implements VacacionesCalcula
         this.diasVacacionesAdicionales = diasVacacionesAdicionales;
     }
 
-    // Método exclusivo para gerentes
+    // Método exclusivo
     public void aprobarVacacionesEmpleado(EmpleadoTiempoCompleto empleado, int dias) {
-        // TODO: implementar lógica para aprobar vacaciones del empleado
+        empleado.setDiasVacacionesSolicitados(empleado.getDiasVacacionesSolicitados() + dias);
     }
 
     @Override
     public int calcularDiasVacaciones(int antiguedad) {
-        int diasBase = antiguedad * 2;
-        return diasBase + diasVacacionesAdicionales;
+        return antiguedad * 2 + diasVacacionesAdicionales;
     }
 
     @Override
     public void solicitarPermiso(int dias) {
-        // Lógica para solicitar permiso
+        setDiasPermisosSolicitados(getDiasPermisosSolicitados() + dias);
     }
 
     @Override
     public BigDecimal calcularSalario() {
-        return super.calcularSalario().add(new BigDecimal("1000000")); // Bonus gerencial
-    }
-
-    @Override
-    public boolean validarDatosEspecificos() {
-        return super.validarDatosEspecificos() && diasVacacionesAdicionales >= 0;
+        return super.calcularSalario().add(new BigDecimal("2000000"));
     }
 }

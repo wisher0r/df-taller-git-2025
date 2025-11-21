@@ -1,0 +1,119 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2025-11-21T00:00:00.000Z",
+  "__export_source": "insomnia.desktop.app",
+  "resources": [
+    {
+      "_id": "wrk_lp32025",
+      "parentId": null,
+      "name": "LP32025 - Entrega Final (8 Endpoints)",
+      "description": "Colección oficial con los 8 requests del README – 100% funcional con tu proyecto actual",
+      "_type": "workspace"
+    },
+
+    {
+      "_id": "req_1_batch",
+      "parentId": "wrk_lp32025",
+      "name": "1. Batch exitoso (crea 4 empleados)",
+      "url": "http://localhost:8080/api/empleados/batch",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "[\n  {\"@class\":\"py.edu.uc.lp32025.domain.EmpleadoTiempoCompleto\",\"nombre\":\"Ana López\",\"numeroDocumento\":\"1111111\",\"fechaNacimiento\":\"1990-01-01\",\"salarioMensual\":6000000,\"departamento\":\"IT\"},\n  {\"@class\":\"py.edu.uc.lp32025.domain.EmpleadoPorHora\",\"nombre\":\"Luis García\",\"numeroDocumento\":\"2222222\",\"tarifaPorHora\":50000,\"horasTrabajadas\":45},\n  {\"@class\":\"py.edu.uc.lp32025.domain.Contratista\",\"nombre\":\"Pedro Ruiz\",\"numeroDocumento\":\"3333333\",\"montoPorProyecto\":1200000,\"proyectosCompletados\":3,\"fechaFinContrato\":\"2026-12-31\"},\n  {\"@class\":\"py.edu.uc.lp32025.domain.Gerente\",\"nombre\":\"Laura Gómez\",\"numeroDocumento\":\"4444444\",\"salarioMensual\":25000000,\"departamento\":\"Dirección\"}\n]"
+      },
+      "_type": "request"
+    },
+
+    {
+      "_id": "req_2_batch_error",
+      "parentId": "wrk_lp32025",
+      "name": "2. Batch con error (salario = 0)",
+      "url": "http://localhost:8080/api/empleados/batch",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "[{\"@class\":\"py.edu.uc.lp32025.domain.EmpleadoTiempoCompleto\",\"nombre\":\"Error\",\"numeroDocumento\":\"9999999\",\"salarioMensual\":0,\"departamento\":\"IT\"}]"
+      },
+      "_type": "request"
+    },
+
+    {
+      "_id": "req_3_nomina",
+      "parentId": "wrk_lp32025",
+      "name": "3. Nómina total",
+      "url": "http://localhost:8080/api/empleados/nomina",
+      "method": "GET",
+      "_type": "request"
+    },
+
+    {
+      "_id": "req_4_reporte",
+      "parentId": "wrk_lp32025",
+      "name": "4. Reporte polimórfico",
+      "url": "http://localhost:8080/api/empleados/reporte",
+      "method": "GET",
+      "_type": "request"
+    },
+
+    {
+      "_id": "req_5_solicitar_gerente",
+      "parentId": "wrk_lp32025",
+      "name": "5. Solicitar días (gerente - OK)",
+      "url": "http://localhost:8080/api/empleados/4/solicitar-dias?dias=30&tipo=vacaciones",
+      "method": "POST",
+      "description": "ID 4 = Gerente (creado por el batch)",
+      "_type": "request"
+    },
+
+    {
+      "_id": "req_6_solicitar_error",
+      "parentId": "wrk_lp32025",
+      "name": "6. Solicitar días (no gerente >20 - ERROR)",
+      "url": "http://localhost:8080/api/empleados/1/solicitar-dias?dias=25&tipo=vacaciones",
+      "method": "POST",
+      "description": "ID 1 = EmpleadoTiempoCompleto",
+      "_type": "request"
+    },
+
+    {
+      "_id": "req_7_fecha_error",
+      "parentId": "wrk_lp32025",
+      "name": "7. Fecha nacimiento futura (excepción)",
+      "url": "http://localhost:8080/api/personas",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\"nombre\":\"Juan\",\"fechaNacimiento\":\"2030-01-01\",\"numeroDocumento\":\"8888888\"}"
+      },
+      "_type": "request"
+    },
+
+    {
+      "_id": "req_8_reporte_dias",
+      "parentId": "wrk_lp32025",
+      "name": "8. Reporte empleados >20 días",
+      "url": "http://localhost:8080/api/empleados/reporte-dias-superados?maxDias=20",
+      "method": "GET",
+      "_type": "request"
+    }
+  ]
+}
